@@ -1,31 +1,22 @@
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
+###                 Filename : file_conversion.py           ### 
+###        Description: This python file convert the csv    ###  
+###        into a specfic json format.                      ### 
+### ### ### ### ### ### ### ### ### ### ### ### ### ### ### ### 
 
-# import pandas as pd
-# from itertools import groupby 
-# from collections import OrderedDict
-# import json  
-
-# data = pd.read_csv("./data/Huawei.csv")
-# print("Columns available:", data.columns)
-# print("No of tweets available: ", data.shape[0])
-
-# # results = []
-
-# for (company,channel), bag in data.groupby(["company","channel"]):
-#     contents_df = bag.drop(["company","channel"], axis=1)
-#     subset = [OrderedDict(row) for i,row in contents_df.iterrows()]
-#     results.append(OrderedDict([("company", company),
-#                                 ("channel", channel),
-#                                 ("subset", subset)]))
-#     print(json.dumps(results[0]))
-#     break
-
-
-
+# Loading python libraries
 import csv
 import json
 from collections import OrderedDict
 
+
 def make_record(row):
+    """ Function to create sub records for json record
+    Args:
+        row : each row in csv file
+    Returns:
+        dict: dict contains sub record
+    """
     return {
                 "tweet_created": row["tweet_created"],
                 "tweets":[
@@ -47,13 +38,19 @@ def make_record(row):
             }
 
 results = []
+results1 = []
+sub_records = []
 with open("./data/Huawei.csv", 'r', newline='') as csvfile, \
      open('./data/Huawei.json', 'w') as jsonfile:
+    # Reads the csv file
     reader = csv.DictReader(csvfile, delimiter=',')
+    # Makes sub record from each row in csv file and append to a list
     sub_records = [make_record(row) for row in reader]
     
-    results.append(OrderedDict([("Huawei", "Huawei"),
-                                ("Twitter", sub_records)]))
+    results.append(OrderedDict([("Twitter", sub_records)]))
     
-    out = json.dumps(results[0], indent=4)
+    results1.append(OrderedDict([("Huawei", results[0])]))
+    out = json.dumps(results1[0], indent=4)
+    
+    #Write the json data to the file
     jsonfile.write(out)
